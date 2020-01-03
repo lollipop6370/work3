@@ -25,6 +25,7 @@ io.on('connection', (socket) => {
     io.emit("online", onlineCount);
 	
 	socket.on("send", (msg) => {
+	console.log(msg);
         io.emit("msg", msg);
     });
 
