@@ -1,0 +1,92 @@
+<html>
+<body>
+<canvas id="gc" width="640" height="480"></canvas>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+var socket = io();
+p1y=100;
+p2y=100;
+pt=8;
+ph=50;
+bx=by=200;
+bd=6;
+xv=yv=6;
+score1=score2=0;
+start = 0;
+var myIP;
+
+var c=document.getElementById('gc');
+var cc=c.getContext('2d');
+setInterval(update,1000/30);
+c.addEventListener('mousemove',function(e){
+		p1y = e.clientY-ph/2;
+		socket.emit("playerdata", p1y);
+	});
+
+
+
+socket.on("player2", function (data) {
+				//var address = socket.handshake.address
+				//if(myIP == ''){
+						
+						p2y = data;
+				//	}
+				});
+				
+socket.on("startseccess",(data)=>{
+				//myIP = data;
+				});			
+
+function reset(){
+	bx=c.width/2;
+	by=c.height/2;
+	xv=-xv;
+	yv=6;
+}
+function update(){
+	bx+=xv;
+	by+=yv;
+	if(by<0 || by>c.height)
+	{
+		yv=-yv;
+	}
+	
+	
+	if(bx>c.width)
+	{
+		score1+=1;
+		reset();
+	}
+	if(bx<0)
+	{
+		score2+=1;
+		reset();
+	}
+	if(bx<10+pt)
+	{
+		if(by>p1y && by<p1y+ph)
+		{
+			xv=-xv;
+		}
+	}
+	
+	if(bx>c.width-pt-10)
+	{
+		if(by>p2y && by<p2y+ph)
+		{
+			xv=-xv;
+		}
+	}
+	
+	cc.fillStyle='black';
+	cc.fillRect(0,0,c.width,c.height);
+	cc.fillStyle='white';
+	cc.fillRect(10,p1y,pt,ph);
+	cc.fillRect(c.width-pt-10,p2y,pt,ph);
+	cc.fillRect(bx-bd/2,by-bd/2,bd,bd);
+	cc.fillText(score1,100,100);
+	cc.fillText(score2,c.width-100,100);
+}
+</script>
+</body>
+</html>
