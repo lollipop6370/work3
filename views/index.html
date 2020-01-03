@@ -178,7 +178,81 @@
 		$(document).ready(()=>{
 			var formData = {};
 			socket.emit("send", formData);
-					
+			
+			var canvas = $('#canvas');
+			var context = canvas[0].getContext('2d');
+			var drawing = false;
+			var mycolor = document.getElementById("color1").value;
+			var queue = [];
+			
+			canvas.bind('mousedown',(e)=>{
+				if(!drawing) {
+					drawing = true;
+					var offset = $(e.currentTarget).offset()
+					var x = e.pageX - offset.left;
+					var y = e.pageY - offset.top;
+					drawLine(context,x,y,x,y,mycolor);
+					queue.push([x,y]);
+				}
+			});
+			canvas.bind('mouseup',(e)=>{
+				if(drawing) {
+					var old = queue.shift();
+					var offset = $(e.currentTarget).offset();
+					var x = e.pageX - offset.left;
+					var y = e.pageY - offset.top;
+					drawLine(context,old[0], old[1], x, y, mycolor);
+					drawing = false;
+				}
+			});
+			canvas.bind('mousemove',(e)=>{
+				if(drawing) {
+					var old = queue.shift();
+					var offset = $(e.currentTarget).offset();
+					var x = e.pageX - offset.left;
+					var y = e.pageY - offset.top;
+					var formData = [];
+					formData[0] = old[0];
+					formData[1] = old[1];
+					formData[2] = x;
+					formData[3] = y;
+					formData[4] = mycolor;
+					socket.emit("data_canvas", formData);
+					drawLine(context,old[0],old[1],x,y,mycolor);
+					queue.push([x,y]);
+				}
+			});
+			function drawLine(ctx,x,y,x1,y1,color) {
+				ctx.strokeStyle = color;
+				ctx.beginPath();
+				ctx.moveTo(x,y);
+				ctx.lineTo(x1,y1);
+				ctx.closePath();
+				ctx.stroke();
+			}
+			$('#toshow').click(()=>{
+				window.location.assign("/game");
+				var url = $('#canvas')[0].toDataURL();
+				$('#show').prop('src', url);
+			});
+			
+			$('#clear').click(()=>{
+				socket.emit("clear_canvas");
+				context.clearRect(0, 0, 640, 480);
+			});
+			
+			$('#color_change').click(()=>{
+				socket.emit("color_change");
+				mycolor = document.getElementById("color1").value;
+			});
+			
+			socket.on("new_draw",(data)=>{
+				drawLine(context,data[0],data[1],data[2],data[3],data[4]);
+			});
+			
+			socket.on("all_clear",()=>{
+				context.clearRect(0, 0, 640, 480);
+			});			
 });
     </script>
 </body>
