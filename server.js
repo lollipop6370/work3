@@ -44,6 +44,10 @@ io.on('connection', (socket) => {
 		io.emit("all_clear");
 	});
 	
+	socket.on("color_change",()=>{
+		console.log("clear_canvas");
+	});
+	
 	socket.on("gamestart",()=>{
 		var address = socket.handshake.address;
 		console.log(address + "join the gamewait.");
