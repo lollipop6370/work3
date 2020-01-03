@@ -176,6 +176,9 @@
         });
 		
 		$(document).ready(()=>{
+			var formData = {};
+			socket.emit("send", formData);
+			
 			var canvas = $('#canvas');
 			var context = canvas[0].getContext('2d');
 			var drawing = false;
