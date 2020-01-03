@@ -228,6 +228,7 @@
 				ctx.stroke();
 			}
 			$('#toshow').click(()=>{
+				window.location.assign("/game");
 				var url = $('#canvas')[0].toDataURL();
 				$('#show').prop('src', url);
 			});
