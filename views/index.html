@@ -173,10 +173,8 @@
 				window.location.assign("/game");
 			});
 	
-        });
 		
-		$(document).ready(()=>{
-			var formData = {};
+		var formData = {};
 			socket.emit("send", formData);
 			
 			var canvas = $('#canvas');
@@ -252,8 +250,10 @@
 			
 			socket.on("all_clear",()=>{
 				context.clearRect(0, 0, 640, 480);
-			});			
-});
+			});
+        });
+		
+		
     </script>
 </body>
 </html>
