@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chatroom</title>
     <script src="/socket.io/socket.io.js"></script>
-    <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
     <script>
         var socket = io();
     </script>
@@ -173,42 +172,35 @@
 				window.location.assign("/game");
 			});
 	
-		
-		var formData = {};
-			socket.emit("send", formData);
-			
-			var canvas = $('#canvas');
-			var context = canvas[0].getContext('2d');
+			var canvas = document.getElementById('canvas');
+			var context = canvas.getContext('2d');
 			var drawing = false;
 			var mycolor = document.getElementById("color1").value;
 			var queue = [];
 			
-			canvas.bind('mousedown',(e)=>{
+			canvas.addEventListener('mousedown',(e)=>{
 				if(!drawing) {
 					drawing = true;
-					var offset = $(e.currentTarget).offset()
-					var x = e.pageX - offset.left;
-					var y = e.pageY - offset.top;
+					var x = e.pageX - e.currentTarget.offsetLeft;
+					var y = e.pageY - e.currentTarget.offsetTop;
 					drawLine(context,x,y,x,y,mycolor);
 					queue.push([x,y]);
 				}
 			});
-			canvas.bind('mouseup',(e)=>{
+			canvas.addEventListener('mouseup',(e)=>{
 				if(drawing) {
 					var old = queue.shift();
-					var offset = $(e.currentTarget).offset();
-					var x = e.pageX - offset.left;
-					var y = e.pageY - offset.top;
+					var x = e.pageX - e.currentTarget.offsetLeft;
+					var y = e.pageY - e.currentTarget.offsetTop;
 					drawLine(context,old[0], old[1], x, y, mycolor);
 					drawing = false;
 				}
 			});
-			canvas.bind('mousemove',(e)=>{
+			canvas.addEventListener('mousemove',(e)=>{
 				if(drawing) {
 					var old = queue.shift();
-					var offset = $(e.currentTarget).offset();
-					var x = e.pageX - offset.left;
-					var y = e.pageY - offset.top;
+					var x = e.pageX - e.currentTarget.offsetLeft;
+					var y = e.pageY - e.currentTarget.offsetTop;
 					var formData = [];
 					formData[0] = old[0];
 					formData[1] = old[1];
@@ -228,18 +220,18 @@
 				ctx.closePath();
 				ctx.stroke();
 			}
-			$('#toshow').click(()=>{
-				window.location.assign("/game");
-				var url = $('#canvas')[0].toDataURL();
-				$('#show').prop('src', url);
+			
+			document.getElementById('toshow').addEventListener("click",()=>{
+				var url = document.getElementById('canvas').toDataURL();
+				document.getElementById('show').src = url;
 			});
 			
-			$('#clear').click(()=>{
+			document.getElementById('clear').addEventListener("click",()=>{
 				socket.emit("clear_canvas");
 				context.clearRect(0, 0, 640, 480);
 			});
-			
-			$('#color_change').click(()=>{
+
+			document.getElementById('color_change').addEventListener("click",()=>{
 				socket.emit("color_change");
 				mycolor = document.getElementById("color1").value;
 			});
@@ -250,9 +242,9 @@
 			
 			socket.on("all_clear",()=>{
 				context.clearRect(0, 0, 640, 480);
-			});
+			});			
+	
         });
-		
 		
     </script>
 </body>
